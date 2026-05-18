@@ -45,16 +45,11 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
     navbar: {
       title: 'David-Bryne Adedeji',
-      logo: {
-        alt: 'Portfolio',
-        src: 'img/logo.svg',
-      },
       items: [
         {
           type: 'docSidebar',
