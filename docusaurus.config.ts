@@ -58,6 +58,7 @@ const config: Config = {
       logo: {
         alt: 'Guitar',
         src: 'img/logo.svg',
+        srcDark: 'img/logo-dark.svg',
       },
       hideOnScroll: true,
       items: [
