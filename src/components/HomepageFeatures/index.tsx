@@ -38,23 +38,23 @@ const CapabilityList: CapabilityItem[] = [
   {
     title: 'Google Cloud Platform',
     icon: <CloudIcon />,
-    stack: ['BigQuery', 'Cloud Composer', 'Pub/Sub', 'dbt Core', 'Airflow'],
+    stack: ['BigQuery', 'Cloud Composer', 'Pub/Sub', 'GCS', 'Dataflow', 'Dataplex', 'IAM', 'Secret Manager', 'Firestore', 'BigQuery ML'],
     description:
-      'Custom Python extractors into Pub/Sub and Cloud Storage, transformed into dimensional models in BigQuery with dbt, and wired together with Airflow DAGs.',
+      'Across the GCP suite — data warehousing, event streaming, workflow orchestration, governance, and ML — primarily in data engineering and analytics contexts.',
   },
   {
     title: 'Microsoft Azure',
     icon: <DatabaseIcon />,
-    stack: ['Azure Data Factory', 'Azure SQL', 'ADLS Gen2', 'IBM DB2', 'T-SQL'],
+    stack: ['Azure Data Factory', 'ADLS Gen2', 'Azure SQL', 'Azure Key Vault', 'Azure Synapse', 'Azure Monitor', 'Entra ID'],
     description:
-      'ADF pipelines, large-scale DB2 to Azure SQL migrations, and a row-level hash validation framework that catches what row counts miss.',
+      'ADF pipelines, large-scale migrations to Azure SQL, ADLS Gen2 data lake patterns, and enterprise-grade validation frameworks across regulated environments.',
   },
   {
     title: 'Python & SQL',
     icon: <CodeIcon />,
-    stack: ['Python 3.12', 'REST APIs', 'TypeScript', 'Airflow DAGs', 'Webhooks'],
+    stack: ['Python 3.12', 'pandas', 'Pydantic', 'FastAPI', 'SQLAlchemy', 'PostgreSQL', 'MySQL', 'T-SQL', 'SQL Server', 'IBM DB2', 'Google Standard SQL'],
     description:
-      'Custom REST clients, webhook delivery, ACORD-compliant partner integrations, and validation logic — written in code, not configured in a GUI.',
+      'Python for pipeline logic, data validation, API clients, and automation. SQL across dialects — from operational queries to complex dimensional transformations.',
   },
 ];
 
