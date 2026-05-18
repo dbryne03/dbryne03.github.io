@@ -9,11 +9,13 @@ const config: Config = {
 
   url: 'https://dbryne03.github.io',
   baseUrl: '/',
+  trailingSlash: true,
 
   organizationName: 'dbryne03',
   projectName: 'dbryne03.github.io',
 
   onBrokenLinks: 'throw',
+  onBrokenAnchors: 'warn',
 
   i18n: {
     defaultLocale: 'en',
@@ -26,9 +28,12 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          breadcrumbs: false,
         },
         blog: {
           showReadingTime: true,
+          blogSidebarCount: 'ALL',
+          blogSidebarTitle: 'Posts',
           feedOptions: {
             type: ['rss', 'atom'],
             xslt: true,
@@ -50,6 +55,7 @@ const config: Config = {
     },
     navbar: {
       title: 'David-Bryne Adedeji',
+      hideOnScroll: true,
       items: [
         {
           type: 'docSidebar',
