@@ -36,21 +36,21 @@ function CodeIcon() {
 
 const CapabilityList: CapabilityItem[] = [
   {
-    title: 'GCP Data Engineering',
+    title: 'Google Cloud Platform',
     icon: <CloudIcon />,
     stack: ['BigQuery', 'Cloud Composer', 'Pub/Sub', 'dbt Core', 'Airflow'],
     description:
       'Custom Python extractors into Pub/Sub and Cloud Storage, transformed into dimensional models in BigQuery with dbt, and wired together with Airflow DAGs.',
   },
   {
-    title: 'Azure Data Engineering',
+    title: 'Microsoft Azure',
     icon: <DatabaseIcon />,
     stack: ['Azure Data Factory', 'Azure SQL', 'ADLS Gen2', 'IBM DB2', 'T-SQL'],
     description:
       'ADF pipelines, large-scale DB2 to Azure SQL migrations, and a row-level hash validation framework that catches what row counts miss.',
   },
   {
-    title: 'Python & Integration',
+    title: 'Python & SQL',
     icon: <CodeIcon />,
     stack: ['Python 3.12', 'REST APIs', 'TypeScript', 'Airflow DAGs', 'Webhooks'],
     description:
