@@ -55,6 +55,10 @@ const config: Config = {
     },
     navbar: {
       title: 'David-Bryne Adedeji',
+      logo: {
+        alt: 'Guitar',
+        src: 'img/logo.svg',
+      },
       hideOnScroll: true,
       items: [
         {
