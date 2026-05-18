@@ -7,24 +7,73 @@ import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
 
-const metrics = [
-  {value: '4', label: 'External partners served'},
-  {value: '50%', label: 'Faster pipeline execution'},
-  {value: '30%', label: 'Cloud cost reduction'},
-  {value: '99.999%', label: 'Pipeline uptime'},
-];
-
-function MetricsRow() {
+function AboutSection() {
   return (
-    <section className={styles.metrics}>
+    <section className={styles.about}>
       <div className="container">
-        <div className={styles.metricsRow}>
-          {metrics.map(({value, label}) => (
-            <div key={label} className={styles.metricItem}>
-              <span className={styles.metricValue}>{value}</span>
-              <span className={styles.metricLabel}>{label}</span>
-            </div>
-          ))}
+        <div className={styles.aboutGrid}>
+          <div className={styles.aboutBio}>
+            <Heading as="h2">About</Heading>
+            <p>
+              I'm a data engineer with a focus on cloud infrastructure across GCP and Azure.
+              The work I find most interesting sits at the intersection of data movement and
+              data quality — API integrations, orchestration pipelines, migration validation
+              frameworks, and the tooling that lets you trust what's in your warehouse.
+              I've been building these systems across insurance, cloud consulting, and
+              partner integration contexts since graduating in 2023.
+            </p>
+            <p>
+              I studied Computer Science with a Cyber Operations focus at Cedarville University,
+              which gave me a different lens on data infrastructure than a pure software
+              background would have. Outside of the main stack, I'm interested in where AI
+              tooling is heading for data engineering — I've spent time building with LLMs,
+              RAG pipelines, and agentic workflows, and I have views on what's actually
+              useful versus what's being oversold.
+            </p>
+            <p>
+              Originally from Nigeria, currently based in the US, and actively looking to
+              relocate to Greater Manchester. I'm drawn to the engineering culture there
+              and ready to make the move.
+            </p>
+          </div>
+          <div className={styles.aboutMeta}>
+            <dl className={styles.metaList}>
+              <div className={styles.metaRow}>
+                <dt>Based in</dt>
+                <dd>United States</dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>Seeking</dt>
+                <dd>Greater Manchester, UK</dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>Visa</dt>
+                <dd>Skilled Worker sponsorship required</dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>Contact</dt>
+                <dd>
+                  <a href="mailto:davidedeji25@gmail.com">davidedeji25@gmail.com</a>
+                </dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>LinkedIn</dt>
+                <dd>
+                  <a href="https://linkedin.com/in/davidadedeji" target="_blank" rel="noopener noreferrer">
+                    linkedin.com/in/davidadedeji
+                  </a>
+                </dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>GitHub</dt>
+                <dd>
+                  <a href="https://github.com/dbryne03" target="_blank" rel="noopener noreferrer">
+                    github.com/dbryne03
+                  </a>
+                </dd>
+              </div>
+            </dl>
+          </div>
         </div>
       </div>
     </section>
@@ -68,7 +117,7 @@ export default function Home(): ReactNode {
       description="Cloud-native data engineering portfolio. GCP, Azure, Python, SQL, Airflow, dbt, BigQuery, Azure Data Factory.">
       <HomepageHeader />
       <main>
-        <MetricsRow />
+        <AboutSection />
         <HomepageFeatures />
       </main>
     </Layout>
