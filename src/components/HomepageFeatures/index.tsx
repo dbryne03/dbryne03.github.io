@@ -40,21 +40,21 @@ const CapabilityList: CapabilityItem[] = [
     icon: <CloudIcon />,
     stack: ['BigQuery', 'Cloud Composer', 'Pub/Sub', 'dbt Core', 'Airflow'],
     description:
-      'End-to-end cloud-native pipelines — custom API extraction, event-driven staging via Pub/Sub, dimensional modeling in BigQuery, and operational dashboards.',
+      'Custom Python extractors into Pub/Sub and Cloud Storage, transformed into dimensional models in BigQuery with dbt, and wired together with Airflow DAGs.',
   },
   {
     title: 'Azure Data Engineering',
     icon: <DatabaseIcon />,
     stack: ['Azure Data Factory', 'Azure SQL', 'ADLS Gen2', 'IBM DB2', 'T-SQL'],
     description:
-      'Enterprise orchestration and migration on Azure — CDC validation frameworks, 40TB+ ADF ecosystem modernization, and 99.99% data validation accuracy.',
+      'ADF pipelines, large-scale DB2 to Azure SQL migrations, and a row-level hash validation framework that catches what row counts miss.',
   },
   {
     title: 'Python & Integration',
     icon: <CodeIcon />,
     stack: ['Python 3.12', 'REST APIs', 'TypeScript', 'Airflow DAGs', 'Webhooks'],
     description:
-      'Code-first integrations with custom REST clients, ACORD-compliant delivery patterns, automated hash-based validation, and partner-facing data pipelines.',
+      'Custom REST clients, webhook delivery, ACORD-compliant partner integrations, and validation logic — written in code, not configured in a GUI.',
   },
 ];
 

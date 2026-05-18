@@ -4,11 +4,11 @@ sidebar_position: 2
 
 # Azure CDC Migration & Validation Framework
 
-Enterprise-grade Change Data Capture migration and data validation framework on Microsoft Azure, demonstrating automated row-signature hashing and programmatic data integrity verification.
+IBM DB2 to Azure SQL migration pipeline with a custom validation layer that verifies data integrity at the row level using SHA-256 hash comparison.
 
-## Overview
+The data movement itself is handled by ADF. The more interesting piece is the validation: for each migrated table, the framework generates a hash for every row on both source and target and compares them by primary key. Mismatches get written to a reconciliation table with the row-level detail needed to investigate.
 
-This project replicates a large-scale enterprise migration pattern: IBM DB2 source data is migrated to Azure SQL Database via Azure Data Factory, and a custom Python and T-SQL validation engine verifies row-level data fidelity using cryptographic hash comparison. The framework achieves **99.99% data validation accuracy** and reduced manual reconciliation effort by **65%**.
+This came from real work at 66degrees where row counts weren't enough — we needed to know the data was actually correct, not just that the right number of rows arrived.
 
 ## Architecture
 
@@ -31,14 +31,9 @@ Python Hash Engine + T-SQL Stored Procedures
 Reconciliation Table (row-level validation results)
 ```
 
-## Validation Logic
+## How the Validation Works
 
-The core of this framework is a deterministic row-signature hash:
-
-1. **Source hash** — concatenate all column values for a given row and compute a SHA-256 hash
-2. **Target hash** — apply the same concatenation and hashing against the migrated row
-3. **Comparison** — match source and target hashes by primary key; any mismatch flags a data integrity failure
-4. **Reporting** — write results to a reconciliation table with row-level failure details
+Each row gets a SHA-256 hash computed from all its column values, concatenated in sorted column order. Sorted order matters — it keeps the output deterministic regardless of how the query returns columns on either system.
 
 ```python
 import hashlib
@@ -48,21 +43,9 @@ def generate_row_signature(row: dict, columns: list[str]) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
 ```
 
-## Key Design Decisions
+The comparison runs as a T-SQL stored procedure so it stays in the database layer and avoids pulling large result sets over the wire. ADF pipelines are parameterised — you pass in the table name, primary key, and column list, and the same pipeline works for any table.
 
-**Hash-based validation over row counts**
-Row counts verify volume only. Hash comparison verifies content integrity at the row level, catching silent data corruption, type coercion errors, and encoding mismatches.
-
-**Sorted column concatenation**
-Ensures deterministic hash output regardless of query column ordering across source and target systems.
-
-**T-SQL stored procedures for comparison**
-Encapsulating comparison logic in the database layer reduces network overhead for large datasets and keeps reconciliation logic transactionally consistent.
-
-**Parameterised ADF pipelines**
-A single pipeline template validates any table by passing the table name, primary key, and column list as parameters — no code changes required per table.
-
-## Technical Stack
+## Stack
 
 | Layer | Technology |
 |:---|:---|
@@ -75,14 +58,14 @@ A single pipeline template validates any table by passing the table name, primar
 | Secrets | Azure Key Vault |
 | CI/CD | GitHub Actions |
 
-## Outcome Metrics
+## Results
 
 | Metric | Result |
 |:---|:---|
 | Data validation accuracy | 99.99% |
 | Reduction in manual reconciliation | 65% |
-| Pipeline reliability | 99.999% |
-| ADF ecosystem size | 40TB+ |
+| Pipeline uptime | 99.999% |
+| Dataset size | 40TB+ |
 
 ## Repository
 

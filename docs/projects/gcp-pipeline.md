@@ -2,13 +2,11 @@
 sidebar_position: 1
 ---
 
-# GCP Data Integration & Dimensional Modeling Pipeline
+# GCP Data Integration & Dimensional Modeling
 
-End-to-end cloud-native data pipeline on Google Cloud Platform demonstrating custom API extraction, event-driven staging, and dimensional modeling using dbt and BigQuery.
+A pipeline that extracts data from REST APIs, stages it through Pub/Sub and Cloud Storage, then transforms it into a dimensional warehouse in BigQuery using dbt. Orchestrated end-to-end with Airflow.
 
-## Overview
-
-This project implements a partner-facing data integration scenario: custom Python applications extract data from REST APIs and publish events to GCP Pub/Sub, which lands raw payloads in Google Cloud Storage. dbt Core transforms staged data into a dimensional warehouse in BigQuery, and the full pipeline is orchestrated by Apache Airflow.
+The goal was to build something I'd be comfortable deploying in a real partner integration context — no managed ETL tools, just Python, SQL, and proper DAG management.
 
 ## Architecture
 
@@ -39,21 +37,15 @@ dbt Core
 Apache Airflow (orchestrates all layers)
 ```
 
-## Key Design Decisions
+## Design Notes
 
-**Custom extraction over SaaS ETL tools**
-Python REST clients handle pagination, rate limiting, and response serialization without black-box dependencies. This approach keeps integration logic transparent, testable, and version-controlled.
+I avoided managed ETL tools for extraction. Custom Python clients give full control over pagination logic, rate limiting, and error handling — and the code lives in version control like everything else.
 
-**Pub/Sub as event buffer**
-Decouples extraction from landing, enabling message-level retry and replay without re-running the full extraction job.
+Pub/Sub sits between extraction and landing so the two steps are decoupled. If the GCS write fails, the message can be reprocessed without re-hitting the API.
 
-**Layered dbt modeling**
-Staging → Intermediate → Mart follows Kimball dimensional modeling principles, separating source conforming from business transformation logic.
+The dbt project follows a three-layer structure: staging models normalize raw sources, intermediate models apply business logic, and mart models are what analytics actually queries. Airflow runs each layer in sequence and alerts on failure.
 
-**Airflow for observability**
-DAG-level task tracking, retry policies, and alerting provide production-grade reliability and a clear audit trail.
-
-## Technical Stack
+## Stack
 
 | Layer | Technology |
 |:---|:---|

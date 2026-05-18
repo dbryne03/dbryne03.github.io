@@ -8,10 +8,10 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 
 const metrics = [
-  {value: '4', label: 'External Partners Integrated'},
-  {value: '50%', label: 'Orchestration Performance Gain'},
-  {value: '30%', label: 'Cloud Cost Reduction'},
-  {value: '99.999%', label: 'Pipeline Reliability'},
+  {value: '4', label: 'External partners served'},
+  {value: '50%', label: 'Faster pipeline execution'},
+  {value: '30%', label: 'Cloud cost reduction'},
+  {value: '99.999%', label: 'Pipeline uptime'},
 ];
 
 function MetricsRow() {
@@ -40,8 +40,9 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">Data Platform Engineer II</p>
         <p className={styles.heroDescription}>
-          Cloud-native data engineering across GCP and Azure. Partner integrations,
-          dimensional modeling, CDC frameworks, and scalable pipeline orchestration.
+          I work on data pipelines across GCP and Azure — REST API integrations,
+          BigQuery warehouses, dbt models, ADF orchestration, and the validation
+          work that makes migrations trustworthy.
         </p>
         <div className={styles.buttons}>
           <Link
