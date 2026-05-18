@@ -1,5 +1,4 @@
 import type {ReactNode} from 'react';
-import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
@@ -63,7 +62,7 @@ const CapabilityList: CapabilityItem[] = [
 
 function Capability({title, icon, stack, description}: CapabilityItem) {
   return (
-    <div className={clsx('col col--4')}>
+    <div className="col col--4">
       <div className={styles.card}>
         <div className={styles.cardIcon}>{icon}</div>
         <Heading as="h3">{title}</Heading>
