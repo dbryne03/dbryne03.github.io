@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'David-Bryne Adedeji',
   tagline: 'Data Platform Engineer · GCP · Azure · Python · SQL',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   url: 'https://dbryne03.github.io',
   baseUrl: '/',
