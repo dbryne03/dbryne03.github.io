@@ -1,53 +1,56 @@
-# Data Platform Engineering Portfolio & Certification Track
+# dbryne03.github.io
 
-This repository contains the source code for the professional portfolio of David-Bryne Adedeji, focusing on Data Platform Engineering, cloud architecture, and data integration. The portfolio is built using [Docusaurus](https://docusaurus.io/) and hosted on GitHub Pages.
+Source for the professional portfolio of **David-Bryne Adedeji** — Data Platform Engineer II.
 
-## Project Overview
+Live at [dbryne03.github.io](https://dbryne03.github.io)
 
-This platform serves as the centralized repository for:
-- Project documentation and architectural diagrams.
-- Demonstrations of advanced data engineering capabilities on GCP and Azure.
-- Tracking of professional certifications and continued learning.
+---
 
-The overarching development plan can be referenced within the project scope, detailing specific tracks for GCP Data Integration, Azure CDC Migration, and Cloud Infrastructure Certifications.
+## About
 
-## Architecture & Technology Stack
+This portfolio documents production-grade data engineering work across GCP and Azure, including project architecture, engineering decisions, and professional certifications. Built with [Docusaurus](https://docusaurus.io/), deployed via GitHub Pages.
+
+## Projects
+
+| Project | Stack |
+|:---|:---|
+| [GCP Data Integration & Dimensional Modeling](https://dbryne03.github.io/docs/projects/gcp-pipeline) | Python, Pub/Sub, GCS, BigQuery, dbt, Airflow |
+| [Azure CDC Migration & Validation Framework](https://dbryne03.github.io/docs/projects/azure-cdc) | ADF, ADLS Gen2, Azure SQL, Python, T-SQL |
+
+## Tech Stack
 
 - **Framework:** Docusaurus (React, TypeScript)
 - **Hosting:** GitHub Pages
-- **CI/CD:** GitHub Actions
-- **Primary Languages (Data Tracks):** Python 3.12, SQL
+- **CI/CD:** GitHub Actions — auto-deploys on push to `main`
 
 ## Local Development
 
-To run this project locally, ensure you have Node.js installed, then execute:
-
 ```bash
-# Install dependencies
 npm install
-
-# Start the local development server
 npm run start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Deployment
-
-This project utilizes GitHub Actions for continuous deployment. Upon merging changes into the `main` branch, the `.github/workflows/deploy.yml` workflow automatically builds the static site and deploys it to the `gh-pages` branch, making the updates live on the configured GitHub Pages URL.
+## Build
 
 ```bash
-# To manually build the static site locally
 npm run build
 ```
 
 ## Repository Structure
 
-- `/docs`: Contains technical documentation and project deep-dives.
-- `/blog`: Used for project updates, certification milestones, and engineering insights.
-- `/src`: Contains custom React components and styling for the Docusaurus site.
-- `.github/workflows`: Contains the CI/CD pipeline configuration (`deploy.yml`).
+```
+docs/
+  certifications.md       # Professional certifications
+  projects/
+    gcp-pipeline.md       # GCP Data Integration & Dimensional Modeling
+    azure-cdc.md          # Azure CDC Migration & Validation Framework
+blog/                     # Engineering updates and certification milestones
+src/
+  pages/                  # Homepage
+  components/             # Custom React components
+.github/workflows/        # GitHub Actions CI/CD
+```
 
-## License
+---
 
-Copyright © 2026 David-Bryne Adedeji.
+© 2026 David-Bryne Adedeji

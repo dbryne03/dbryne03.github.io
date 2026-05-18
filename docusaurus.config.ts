@@ -2,31 +2,19 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
 const config: Config = {
-  title: 'Data Platform Portfolio',
-  tagline: 'Engineering Portfolio & Certification Track',
+  title: 'David-Bryne Adedeji',
+  tagline: 'Data Platform Engineer · GCP · Azure · Python · SQL',
   favicon: 'img/favicon.ico',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
-
-  // Set the production url of your site here
   url: 'https://dbryne03.github.io',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'dbryne03', // Usually your GitHub org/user name.
-  projectName: 'dbryne03.github.io', // Usually your repo name.
+  organizationName: 'dbryne03',
+  projectName: 'dbryne03.github.io',
 
   onBrokenLinks: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -38,10 +26,6 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/dbryne03/dbryne03.github.io/tree/main/',
         },
         blog: {
           showReadingTime: true,
@@ -49,11 +33,6 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/dbryne03/dbryne03.github.io/tree/main/',
-          // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -66,15 +45,14 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'My Site',
+      title: 'David-Bryne Adedeji',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Portfolio',
         src: 'img/logo.svg',
       },
       items: [
@@ -82,11 +60,16 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'projectSidebar',
           position: 'left',
-          label: 'Projects & Certifications',
+          label: 'Portfolio',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://linkedin.com/in/davidadedeji',
+          label: 'LinkedIn',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/dbryne03',
           label: 'GitHub',
           position: 'right',
         },
@@ -96,28 +79,36 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Portfolio',
           items: [
             {
-              label: 'Tutorial',
-              to: '/docs/intro',
+              label: 'GCP Pipeline',
+              to: '/docs/projects/gcp-pipeline',
+            },
+            {
+              label: 'Azure CDC Framework',
+              to: '/docs/projects/azure-cdc',
+            },
+            {
+              label: 'Certifications',
+              to: '/docs/certifications',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'Connect',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'LinkedIn',
+              href: 'https://linkedin.com/in/davidadedeji',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'GitHub',
+              href: 'https://github.com/dbryne03',
             },
             {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'Email',
+              href: 'mailto:davidedeji25@gmail.com',
             },
           ],
         },
@@ -128,10 +119,6 @@ const config: Config = {
               label: 'Blog',
               to: '/blog',
             },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/dbryne03/dbryne03.github.io',
-            },
           ],
         },
       ],
@@ -140,6 +127,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['python', 'sql', 'bash'],
     },
   } satisfies Preset.ThemeConfig,
 };
