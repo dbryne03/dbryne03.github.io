@@ -38,23 +38,23 @@ const CapabilityList: CapabilityItem[] = [
   {
     title: 'Google Cloud Platform',
     icon: <CloudIcon />,
-    stack: ['BigQuery', 'Cloud Composer', 'Pub/Sub', 'GCS', 'Dataflow', 'Dataplex', 'IAM', 'Secret Manager', 'Firestore', 'BigQuery ML'],
+    stack: ['BigQuery', 'Cloud Composer', 'Pub/Sub', 'GCS', 'dbt Core', 'Airflow', 'Astronomer', 'Dataplex', 'BigQuery ML', 'Looker Studio'],
     description:
-      'Across the GCP suite — data warehousing, event streaming, workflow orchestration, governance, and ML — primarily in data engineering and analytics contexts.',
+      'Pipeline authoring, warehouse design, and orchestration on GCP — from raw API ingestion through Pub/Sub to dimensional models in BigQuery, with dbt transformations and Airflow DAG management.',
   },
   {
     title: 'Microsoft Azure',
     icon: <DatabaseIcon />,
-    stack: ['Azure Data Factory', 'ADLS Gen2', 'Azure SQL', 'Azure Key Vault', 'Azure Synapse', 'Azure Monitor', 'Entra ID'],
+    stack: ['Azure Data Factory', 'ADLS Gen2', 'Azure SQL', 'Azure Synapse', 'dbt', 'CDC', 'IBM DB2'],
     description:
-      'ADF pipelines, large-scale migrations to Azure SQL, ADLS Gen2 data lake patterns, and enterprise-grade validation frameworks across regulated environments.',
+      'ADF pipeline authoring, data lake architecture on ADLS Gen2, large-scale database migrations, and CDC validation frameworks for complex enterprise data movement.',
   },
   {
     title: 'Python & SQL',
     icon: <CodeIcon />,
-    stack: ['Python 3.12', 'pandas', 'Pydantic', 'FastAPI', 'SQLAlchemy', 'PostgreSQL', 'MySQL', 'T-SQL', 'SQL Server', 'IBM DB2', 'Google Standard SQL'],
+    stack: ['Python 3.12', 'pandas', 'Pydantic', 'REST APIs', 'Webhooks', 'ACORD', 'PostgreSQL', 'MySQL', 'T-SQL', 'IBM DB2 SQL', 'Google Standard SQL'],
     description:
-      'Python for pipeline logic, data validation, API clients, and automation. SQL across dialects — from operational queries to complex dimensional transformations.',
+      'Python for extraction logic, data validation, and partner-facing integrations. SQL across dialects for transformation, dimensional modeling, and operational reporting.',
   },
 ];
 
