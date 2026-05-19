@@ -6,7 +6,7 @@
 
 ---
 
-Cloud-native data engineer with experience building scalable pipelines, partner-facing integrations, and CDC migration frameworks across Google Cloud Platform and Microsoft Azure. Currently based in the US and seeking relocation to Greater Manchester, UK — open to Skilled Worker visa sponsorship.
+Cloud-native data engineer with experience building scalable pipelines, partner-facing integrations, and CDC migration frameworks across Google Cloud Platform and Microsoft Azure.
 
 ### What's in the portfolio
 
