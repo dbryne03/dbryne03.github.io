@@ -7,8 +7,8 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Projects',
       items: [
-        {type: 'doc', id: 'projects/gcp', label: 'Google Cloud Platform #0001'},
-        {type: 'doc', id: 'projects/azure', label: 'Microsoft Azure #0001'},
+        {type: 'doc', id: 'projects/gcp0001', label: 'Google Cloud Platform #0001'},
+        {type: 'doc', id: 'projects/azure0001', label: 'Microsoft Azure #0001'},
       ],
     },
   ],

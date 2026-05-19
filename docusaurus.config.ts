@@ -89,11 +89,11 @@ const config: Config = {
           items: [
             {
               label: 'Google Cloud Platform #0001',
-              to: '/docs/projects/gcp',
+              to: '/docs/projects/gcp0001',
             },
             {
               label: 'Microsoft Azure #0001',
-              to: '/docs/projects/azure',
+              to: '/docs/projects/azure0001',
             },
             {
               label: 'Certifications',
