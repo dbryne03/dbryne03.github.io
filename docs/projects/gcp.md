@@ -4,83 +4,124 @@ sidebar_position: 1
 
 # Google Cloud Platform #0001
 
-A pipeline that extracts data from REST APIs, stages it through Pub/Sub and Cloud Storage, then transforms it into a dimensional warehouse in BigQuery using dbt. Orchestrated end-to-end with Airflow.
+## Overview
 
-The goal was to build something I'd be comfortable deploying in a real partner integration context — no managed ETL tools, just Python, SQL, and proper DAG management.
+A monthly music intelligence pipeline built on Google Cloud Platform, ingesting data from three sources — a REST API, a JSON dataset, and a Parquet dataset — transforming it into a dimensional model in BigQuery, and delivering outputs via Looker Studio and Google Sheets.
+
+The pipeline tracks artist chart performance, catalogue depth, and audio characteristics across the Last.fm listener base on a monthly cadence, with support for on-demand execution via a central Airflow DAG.
+
+## Objectives
+
+1. Identify which artists are growing in listener count and chart presence on a month-over-month basis
+2. Profile the audio characteristics of charting tracks using Spotify feature data
+3. Contextualise artist performance against catalogue depth and release history from MusicBrainz
+4. Deliver findings to both technical and non-technical stakeholders through automated reporting
+
+## Sources
+
+| Source | Name | Type | Format |
+|:---|:---|:---|:---|
+| A | Last.fm API | REST API | JSON — charts, artist metadata, tags, play counts |
+| B | MusicBrainz Database Dump | Batch | JSON — canonical artist, recording, release, genre |
+| C | Spotify Tracks Dataset | Batch | Parquet — audio features per track |
 
 ## Architecture
 
 ```
-REST API
-   │
-   ▼
-Python Extractor (pagination, rate limiting, serialization)
-   │
-   ▼
-GCP Pub/Sub (event buffer)
-   │
-   ▼
-Google Cloud Storage (raw landing zone)
-   │
-   ▼
-BigQuery (staging layer)
-   │
-   ▼
-dbt Core
-   ├── staging/      (source conforming)
-   ├── intermediate/ (business logic)
-   └── mart/         (dimensional models)
-         │
-         ▼
-   Looker Studio (dashboard)
-         ▲
-Apache Airflow (orchestrates all layers)
+Source A                    Source B                Source C
+Last.fm API                 MusicBrainz             Spotify
+                            JSON Dump               Parquet
+     │                          │                       │
+     ▼                          ▼                       ▼
+Cloud Run Job               Cloud Run Job           Cloud Run Job
+(Python, API key,           (Python, download       (Python, download
+ pagination)                 + stage)                + stage)
+     │                          │                       │
+     ▼                          │                       │
+Kafka Topic                     │                       │
+(Confluent Cloud)               │                       │
+     │                          │                       │
+     ▼                          ▼                       ▼
+GCS (raw/api/)          GCS (raw/batch/)        GCS (raw/batch/)
+     └──────────────────────────┴───────────────────────┘
+                                │
+                                ▼
+                           BigQuery
+                 raw.lastfm | raw.mb_dump | raw.spotify
+                                │
+                                ▼
+                           dbt Core
+                           ├── staging/        source conforming, one model per source
+                           ├── intermediate/   artist resolution, track matching
+                           └── mart/
+                               ├── dim_artist
+                               ├── dim_track
+                               └── fact_chart_position
+                                │
+                  ┌─────────────┴──────────────┐
+                  ▼                             ▼
+          Looker Studio                  Google Sheets
+          (dashboard)                   (BigQuery connector)
+
+Airflow — monthly cron or on-demand central DAG:
+  extract → stage → load → dbt run → dbt test → notify
 ```
+
+## Dimensional Model
+
+| Model | Description |
+|:---|:---|
+| `dim_artist` | Canonical artist record sourced from MusicBrainz, enriched with Last.fm listener counts and genre tags |
+| `dim_track` | Track-level dimension combining Spotify audio features with Last.fm play count data |
+| `fact_chart_position` | Weekly Last.fm chart positions joined to `dim_artist` and `dim_track` |
+
+## Output
+
+### Looker Studio Dashboard
+
+Four report pages refreshed on pipeline completion:
+
+| Page | Content |
+|:---|:---|
+| Chart Trends | Top 50 artists by listener growth, week-over-week movement |
+| Audio Profile | Distribution and scatter charts of Spotify audio features for charting tracks |
+| Artist Catalogue | Release count, active years, and genre breakdown per artist |
+| Genre Trends | Month-on-month change in genre representation across chart positions |
+
+### Google Sheets
+
+A live monthly summary report connected directly to BigQuery via the native connector. Refreshes automatically on pipeline completion. Designed for stakeholders who require the data in a tabular, shareable format without direct warehouse access.
+
+## Execution Model
+
+The pipeline runs on the first of each month via a scheduled Airflow DAG. The same DAG is available for on-demand execution, triggering the full sequence — extraction, staging, transformation, testing, and output refresh — from a single run.
 
 ## Design Notes
 
-I avoided managed ETL tools for extraction. Custom Python clients give full control over pagination logic, rate limiting, and error handling — and the code lives in version control like everything else.
+**Extraction via Cloud Run Jobs.** Each source runs as a containerised Cloud Run Job — triggered by Airflow, executes to completion, and scales to zero. No persistent compute infrastructure is required.
 
-Pub/Sub sits between extraction and landing so the two steps are decoupled. If the GCS write fails, the message can be reprocessed without re-hitting the API.
+**Kafka as the messaging layer for Source A.** The Last.fm extractor publishes records to a Confluent Cloud topic. A consumer job reads from the topic and stages to GCS, decoupling extraction from landing. This ensures that a failed GCS write can be replayed from the topic without re-issuing API requests — relevant given Last.fm's rate limits and the cost of re-pagination.
 
-The dbt project follows a three-layer structure: staging models normalize raw sources, intermediate models apply business logic, and mart models are what analytics actually queries. Airflow runs each layer in sequence and alerts on failure.
+**Sources B and C write directly to GCS.** File-based batch datasets do not benefit from per-record queuing. Cloud Run Jobs download and stage the files; Airflow GCS sensors detect arrival and trigger the downstream BigQuery load.
+
+**Cross-source artist resolution.** Last.fm, MusicBrainz, Billboard, and Spotify each use different identifiers for the same artist entity. The intermediate layer constructs a resolution table using MusicBrainz IDs as the canonical key, with normalised name matching applied as a fallback for records that do not carry an MBID.
+
+**Spotify Parquet staging is intentionally minimal.** The dataset arrives pre-typed with clean audio features. Staging conforms column names and nullability only. The transformation logic is concentrated in the intermediate layer, where audio features are joined to chart and play data to produce a richer track dimension than either source provides independently.
 
 ## Stack
 
 | Layer | Technology |
 |:---|:---|
-| Extraction | Python 3.12, Custom REST Client |
-| Queueing | GCP Pub/Sub |
-| Raw Storage | Google Cloud Storage |
+| Extraction | Cloud Run Jobs, Python 3.12, Pydantic |
+| Messaging | Apache Kafka (Confluent Cloud) |
+| Storage | Google Cloud Storage |
 | Warehousing | Google BigQuery |
 | Transformation | dbt Core |
 | Orchestration | Apache Airflow |
-| Visualisation | Looker Studio |
+| Reporting | Looker Studio, Google Sheets (BigQuery connector) |
 | CI/CD | GitHub Actions |
 | Secrets | GCP Secret Manager |
 
-## Sample: dbt Staging Model
-
-```sql
--- models/staging/stg_api_events.sql
-with source as (
-    select * from {{ source('raw', 'api_events') }}
-),
-
-renamed as (
-    select
-        event_id,
-        partner_id,
-        event_type,
-        cast(event_timestamp as timestamp) as event_at,
-        json_extract_scalar(payload, '$.record_id') as record_id,
-        _ingested_at
-    from source
-)
-
-select * from renamed
-```
-
 ## Repository
 
-Source code, DAGs, and dbt models: [github.com/dbryne03](https://github.com/dbryne03)
+[github.com/dbryne03/gcp-music-0001](https://github.com/dbryne03/gcp-music-0001)
