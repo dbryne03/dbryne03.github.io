@@ -10,8 +10,8 @@ Data and solutions engineer who builds reliable systems for moving, transforming
 
 ### What's in the portfolio
 
-- **[GCP Pipeline](https://davidbryneadedeji.com/docs/projects/gcp)** — REST API extraction, event-driven staging, dimensional modeling, and Airflow orchestration on Google Cloud
-- **[Azure CDC Framework](https://davidbryneadedeji.com/docs/projects/azure)** — row-level hash validation framework for large-scale enterprise database migration on Azure
+- **[Google Cloud Platform #0001](https://davidbryneadedeji.com/docs/projects/gcp)** — REST API extraction, event-driven staging, dimensional modeling, and Airflow orchestration on Google Cloud
+- **[Microsoft Azure #0001](https://davidbryneadedeji.com/docs/projects/azure)** — row-level hash validation framework for large-scale enterprise database migration on Azure
 - **[Certifications](https://davidbryneadedeji.com/docs/certifications)** — verified Google Cloud and Microsoft Azure credentials
 
 ### Contact

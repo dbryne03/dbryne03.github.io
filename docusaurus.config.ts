@@ -88,11 +88,11 @@ const config: Config = {
           title: 'Portfolio',
           items: [
             {
-              label: 'GCP Pipeline',
+              label: 'Google Cloud Platform #0001',
               to: '/docs/projects/gcp',
             },
             {
-              label: 'Azure CDC Framework',
+              label: 'Microsoft Azure #0001',
               to: '/docs/projects/azure',
             },
             {

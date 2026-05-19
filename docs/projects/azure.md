@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Azure CDC Migration & Validation Framework
+# Microsoft Azure #0001
 
 IBM DB2 to Azure SQL migration pipeline with a custom validation layer that verifies data integrity at the row level using SHA-256 hash comparison.
 

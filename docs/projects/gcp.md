@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# GCP Data Integration & Dimensional Modeling
+# Google Cloud Platform #0001
 
 A pipeline that extracts data from REST APIs, stages it through Pub/Sub and Cloud Storage, then transforms it into a dimensional warehouse in BigQuery using dbt. Orchestrated end-to-end with Airflow.
 
