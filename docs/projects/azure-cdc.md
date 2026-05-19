@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+slug: /azure
 ---
 
 # Azure CDC Migration & Validation Framework

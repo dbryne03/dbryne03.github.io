@@ -27,6 +27,7 @@ const config: Config = {
       'classic',
       {
         docs: {
+          routeBasePath: '/',
           sidebarPath: './sidebars.ts',
           breadcrumbs: false,
         },
@@ -89,15 +90,15 @@ const config: Config = {
           items: [
             {
               label: 'GCP Pipeline',
-              to: '/docs/projects/gcp-pipeline',
+              to: '/gcp',
             },
             {
               label: 'Azure CDC Framework',
-              to: '/docs/projects/azure-cdc',
+              to: '/azure',
             },
             {
               label: 'Certifications',
-              to: '/docs/certifications',
+              to: '/certifications',
             },
           ],
         },

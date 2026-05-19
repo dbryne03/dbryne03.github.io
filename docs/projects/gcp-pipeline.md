@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+slug: /gcp
 ---
 
 # GCP Data Integration & Dimensional Modeling
