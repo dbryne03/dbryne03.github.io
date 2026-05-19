@@ -63,8 +63,8 @@ GCS (raw/api/)          GCS (raw/batch/)        GCS (raw/batch/)
           Looker Studio                  Google Sheets
           (dashboard)                   (BigQuery connector)
 
-Airflow — monthly cron or on-demand central DAG:
-  extract → stage → load → dbt run → dbt test → notify
+Astronomer Cloud — monthly cron or on-demand central DAG:
+  extract → stage → load → dbt run (Cloud Run Job) → dbt test → notify
 ```
 
 ## Dimensional Model
@@ -94,11 +94,11 @@ A live monthly summary report connected directly to BigQuery via the native conn
 
 ## Execution Model
 
-The pipeline runs on the first of each month via a scheduled Airflow DAG. The same DAG is available for on-demand execution, triggering the full sequence — extraction, staging, transformation, testing, and output refresh — from a single run.
+The pipeline runs on the first of each month via a scheduled DAG on Astronomer Cloud — fully managed, cloud-hosted Airflow with no local dependencies. The same DAG is available for on-demand execution, triggering the full sequence — extraction, staging, transformation, testing, and output refresh — from a single run. dbt transformations execute as a Cloud Run Job invoked by the DAG.
 
 ## Design Notes
 
-**Extraction via Cloud Run Jobs.** Each source runs as a containerised Cloud Run Job — triggered by Airflow, executes to completion, and scales to zero. No persistent compute infrastructure is required.
+**Extraction via Cloud Run Jobs.** Each source runs as a containerised Cloud Run Job — triggered by Astronomer Cloud, executes to completion, and scales to zero. No persistent compute infrastructure is required. dbt transformations run the same way — a dedicated Cloud Run Job invoked by the DAG after loading completes.
 
 **Kafka as the messaging layer for Source A.** The Last.fm extractor publishes records to a Confluent Cloud topic. A consumer job reads from the topic and stages to GCS, decoupling extraction from landing. This ensures that a failed GCS write can be replayed from the topic without re-issuing API requests — relevant given Last.fm's rate limits and the cost of re-pagination.
 
@@ -119,7 +119,7 @@ The pipeline runs on the first of each month via a scheduled Airflow DAG. The sa
 | Storage | Google Cloud Storage |
 | Warehousing | Google BigQuery |
 | Transformation | dbt Core |
-| Orchestration | Apache Airflow |
+| Orchestration | Astronomer Cloud (managed Airflow) |
 | Reporting | Looker Studio, Google Sheets (BigQuery connector) |
 | IaC | Pulumi (TypeScript) |
 | CI/CD | GitHub Actions |
