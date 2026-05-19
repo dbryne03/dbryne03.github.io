@@ -12,7 +12,7 @@ The pipeline tracks artist chart performance, catalogue depth, and audio charact
 
 ## Objectives
 
-1. Identify which artists are growing in listener count and chart presence on a month-over-month basis
+1. Identify which artists are growing in listener count and chart presence on a month-on-month basis
 2. Profile the audio characteristics of charting tracks using Spotify feature data
 3. Contextualise artist performance against catalogue depth and release history from MusicBrainz
 4. Deliver findings to both technical and non-technical stakeholders through automated reporting
@@ -83,7 +83,7 @@ Four report pages refreshed on pipeline completion:
 
 | Page | Content |
 |:---|:---|
-| Chart Trends | Top 50 artists by listener growth, week-over-week movement |
+| Chart Trends | Top 50 artists by listener growth, month-on-month movement |
 | Audio Profile | Distribution and scatter charts of Spotify audio features for charting tracks |
 | Artist Catalogue | Release count, active years, and genre breakdown per artist |
 | Genre Trends | Month-on-month change in genre representation across chart positions |
@@ -100,13 +100,13 @@ The pipeline runs on the first of each month via a scheduled DAG on Astronomer C
 
 **Extraction via Cloud Run Jobs.** Each source runs as a containerised Cloud Run Job — triggered by Astronomer Cloud, executes to completion, and scales to zero. No persistent compute infrastructure is required. dbt transformations run the same way — a dedicated Cloud Run Job invoked by the DAG after loading completes.
 
-**Kafka as the messaging layer for Source A.** The Last.fm extractor publishes records to a Confluent Cloud topic. A consumer job reads from the topic and stages to GCS, decoupling extraction from landing. This ensures that a failed GCS write can be replayed from the topic without re-issuing API requests — relevant given Last.fm's rate limits and the cost of re-pagination.
+**Kafka as the messaging layer for Source A.** The Last.fm extractor publishes records to a Confluent Cloud topic. A consumer job reads from the topic and stages to GCS, decoupling extraction from landing. Whilst a scheduled batch job does not strictly require a message queue, this pattern ensures that a failed GCS write can be replayed from the topic without re-issuing API requests — relevant given Last.fm's rate limits and the cost of re-pagination.
 
 **Sources B and C write directly to GCS.** File-based batch datasets do not benefit from per-record queuing. Cloud Run Jobs download and stage the files; Airflow GCS sensors detect arrival and trigger the downstream BigQuery load.
 
-**Cross-source artist resolution.** Last.fm, MusicBrainz, Billboard, and Spotify each use different identifiers for the same artist entity. The intermediate layer constructs a resolution table using MusicBrainz IDs as the canonical key, with normalised name matching applied as a fallback for records that do not carry an MBID.
+**Cross-source artist resolution.** Last.fm, MusicBrainz, and Spotify each use different identifiers for the same artist entity. The intermediate layer constructs a resolution table using MusicBrainz IDs as the canonical key, with normalised name matching applied as a fallback for records that do not carry an MBID.
 
-**Infrastructure is provisioned with Pulumi (TypeScript).** GCS buckets, BigQuery datasets, Cloud Run Job definitions, Secret Manager secrets, and IAM bindings are all declared in code and applied via CI/CD. Nothing is clicked into existence in the console.
+**Infrastructure is provisioned with Pulumi (TypeScript).** GCS buckets, BigQuery datasets, Cloud Run Job definitions, Secret Manager secrets, and IAM bindings are all declared in code and applied via CI/CD. Nothing is provisioned manually through the console.
 
 **Spotify Parquet staging is intentionally minimal.** The dataset arrives pre-typed with clean audio features. Staging conforms column names and nullability only. The transformation logic is concentrated in the intermediate layer, where audio features are joined to chart and play data to produce a richer track dimension than either source provides independently.
 

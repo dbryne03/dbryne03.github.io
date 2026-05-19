@@ -8,7 +8,7 @@ sidebar_position: 2
 
 A data migration and validation pipeline for insurance operational data on Microsoft Azure. Policyholder, policy, and claims records are migrated from a cloud-hosted PostgreSQL source alongside broker submission files delivered via SFTP, loaded into Azure SQL, and validated at the row level using a cryptographic hash comparison framework.
 
-The pipeline is designed around a core principle: row counts confirm volume, not correctness. Every migrated row is hashed and compared between source and target to guarantee data integrity across PII-sensitive records.
+The pipeline is designed around a core principle: row counts confirm volume, not correctness. Every migrated row is hashed and compared between source and target to guarantee data integrity across records containing personal data.
 
 ## Objectives
 
@@ -16,7 +16,7 @@ The pipeline is designed around a core principle: row counts confirm volume, not
 2. Ingest broker submission files from an SFTP endpoint into Azure SQL alongside the migrated records
 3. Validate data integrity at the row level using SHA-256 hash comparison across all migrated tables
 4. Surface any data mismatches with sufficient detail for investigation and remediation
-5. Handle PII data in accordance with data protection requirements — masking, encryption, and access controls applied at the database layer
+5. Handle personal data in accordance with UK GDPR, the Data Protection Act 2018, and FCA data management expectations — masking, encryption, and access controls applied at the database layer
 
 ## Sources
 
@@ -27,22 +27,22 @@ The pipeline is designed around a core principle: row counts confirm volume, not
 
 ### PostgreSQL Tables
 
-| Table | PII Fields | Description |
+| Table | Personal Data Fields | Description |
 |:---|:---|:---|
-| `policyholders` | Full name, DOB, NI number, address, email, phone | Insured party records |
-| `policies` | Policy number, start/end dates, premium, status, product type | Active and historical policy records |
-| `claims` | Claim ID, incident date, description, amount, status | Claims against active policies |
+| `policyholders` | Full name, date of birth, NI number, address, email, telephone | Insured party records |
+| `policies` | Policy number, inception/expiry dates, premium, status, product type | Active and historical policy records |
+| `claims` | Claim reference, incident date, description, settlement amount, status | Claims against active policies |
 
 ### SFTP Source
 
-Broker submission files delivered as CSV on a scheduled basis. Each file contains new policy applications from registered brokers — policyholder details, requested cover type, and premium band. ADF picks up files on arrival via SFTP connector; processed files are archived in ADLS Gen2.
+Broker submission files delivered as CSV on a scheduled basis. Each file contains new policy applications from registered brokers — policyholder details, requested cover type, and premium band. ADF picks up files on arrival via the SFTP connector; processed files are archived in ADLS Gen2.
 
 ## Architecture
 
 ```
 Source A                              Source B
 Azure Database for PostgreSQL         Azure Container Apps
-3 tables (PII)                        (atmoz/sftp — broker submissions)
+3 tables (personal data)              (atmoz/sftp — broker submissions)
           │                                    │
           ▼                                    ▼
     ADF Copy Activity                   ADF SFTP Connector
@@ -74,17 +74,18 @@ Azure Database for PostgreSQL         Azure Container Apps
                    + ADF Pipeline Alerts (email on failure / completion)
 ```
 
-## PII Handling
+## Personal Data Handling
 
-All data used in this project is synthetic, generated with Faker. PII fields are treated as sensitive throughout the pipeline regardless of origin.
+All data used in this project is synthetic, generated with Faker. Personal data fields are treated as sensitive throughout the pipeline in line with UK GDPR data minimisation and security principles.
 
 | Control | Implementation |
 |:---|:---|
-| Column masking | Azure SQL Dynamic Data Masking on name, email, phone, address fields |
-| Field encryption | Always Encrypted on NI number and DOB columns |
-| Access control | Column-level permissions — validation service account cannot SELECT unmasked PII |
+| Column masking | Azure SQL Dynamic Data Masking on name, email, telephone, and address fields |
+| Field encryption | Always Encrypted on NI number and date of birth columns |
+| Access control | Column-level permissions — validation service account cannot SELECT unmasked personal data |
 | Credentials | All connection strings and keys stored in Azure Key Vault; ADF uses managed identity |
 | Data in transit | TLS enforced on all ADF linked service connections |
+| Audit trail | Pipeline activity logs retained in Azure Monitor for auditability |
 
 ## Validation Framework
 
@@ -108,11 +109,11 @@ Three output tables written to Azure SQL on each pipeline run:
 
 ### Pipeline Alerts
 
-ADF pipeline alerts send email notifications on completion and on failure. Failure alerts include the pipeline stage, error message, and a link to the ADF monitoring run for immediate investigation.
+ADF pipeline alerts issue email notifications on completion and on failure. Failure alerts include the pipeline stage, error message, and a link to the ADF monitoring run for immediate investigation.
 
 ## Execution Model
 
-ADF orchestrates the full pipeline end-to-end. The SFTP Container App starts on pipeline trigger and stops on completion, incurring compute cost only during execution. The full sequence runs on a configurable schedule or on-demand trigger:
+ADF orchestrates the full pipeline end-to-end. The SFTP Container App starts on pipeline trigger and stops on completion, incurring compute cost only during the execution window. The full sequence runs on a configurable schedule or on-demand trigger:
 
 ```
 Start SFTP Container App
@@ -136,7 +137,7 @@ Start SFTP Container App
 
 **Incremental load on the PostgreSQL tables.** Full table reloads are used on the initial migration run. Subsequent runs use watermark-based incremental extraction on an `updated_at` timestamp column, reducing data movement and load time on recurring executions.
 
-**Infrastructure is provisioned with Pulumi (TypeScript).** Azure Database for PostgreSQL, ADLS Gen2, Azure SQL, Container Apps, Azure Function App, ADF instance, Key Vault, and all IAM role assignments are declared in code and applied via CI/CD on GitHub Actions.
+**Infrastructure is provisioned with Pulumi (TypeScript).** Azure Database for PostgreSQL, ADLS Gen2, Azure SQL, Container Apps, Azure Function App, ADF instance, Key Vault, and all IAM role assignments are declared in code and applied via CI/CD on GitHub Actions. Nothing is provisioned manually through the portal.
 
 ## Stack
 
