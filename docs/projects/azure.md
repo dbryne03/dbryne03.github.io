@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-slug: projects/azure
 ---
 
 # Azure CDC Migration & Validation Framework

@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Projects',
-      items: ['projects/gcp-pipeline', 'projects/azure-cdc'],
+      items: ['projects/gcp', 'projects/azure'],
     },
   ],
 };
