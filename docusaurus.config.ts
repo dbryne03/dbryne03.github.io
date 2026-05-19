@@ -7,7 +7,7 @@ const config: Config = {
   tagline: 'Data Platform Engineer · GCP · Azure · Python · SQL',
   favicon: 'img/favicon.svg',
 
-  url: 'https://dbryne03.github.io',
+  url: 'https://davidbryneadedeji.com',
   baseUrl: '/',
   trailingSlash: true,
 
