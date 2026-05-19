@@ -157,3 +157,5 @@ Start SFTP Container App
 ## Repository
 
 [github.com/dbryne03/azure-insurance-0001](https://github.com/dbryne03/azure-insurance-0001)
+
+A full Technical Design Document is available on request. Use the contact details on the [home page](/) or connect via [LinkedIn](https://linkedin.com/in/davidadedeji).

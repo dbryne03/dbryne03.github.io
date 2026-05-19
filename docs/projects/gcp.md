@@ -128,3 +128,5 @@ The pipeline runs on the first of each month via a scheduled DAG on Astronomer C
 ## Repository
 
 [github.com/dbryne03/gcp-music-0001](https://github.com/dbryne03/gcp-music-0001)
+
+A full Technical Design Document is available on request. Use the contact details on the [home page](/) or connect via [LinkedIn](https://linkedin.com/in/davidadedeji).
