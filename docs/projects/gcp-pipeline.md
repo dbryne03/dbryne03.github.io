@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-slug: /gcp
+slug: projects/gcp
 ---
 
 # GCP Data Integration & Dimensional Modeling
