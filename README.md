@@ -1,17 +1,17 @@
 # David-Bryne Adedeji — Portfolio
 
-**Data Platform Engineer II** · GCP · Azure · Python · SQL
+**Data & Solutions Engineer** · Python · SQL · Cloud · APIs · Orchestration
 
 **[davidbryneadedeji.com](https://davidbryneadedeji.com)**
 
 ---
 
-Cloud-native data engineer with experience building scalable pipelines, partner-facing integrations, and CDC migration frameworks across Google Cloud Platform and Microsoft Azure.
+Data and solutions engineer who builds reliable systems for moving, transforming, and delivering data. Comfortable across cloud platforms, SQL dialects, and integration patterns — the work tends to sit at the boundary between raw data and the teams and systems that depend on it.
 
 ### What's in the portfolio
 
-- **[GCP Pipeline](https://davidbryneadedeji.com/docs/projects/gcp)** — end-to-end data integration using Python, Pub/Sub, BigQuery, dbt, and Airflow
-- **[Azure CDC Framework](https://davidbryneadedeji.com/docs/projects/azure)** — enterprise migration validation framework built on ADF, Azure SQL, and custom hashing logic
+- **[GCP Pipeline](https://davidbryneadedeji.com/docs/projects/gcp)** — REST API extraction, event-driven staging, dimensional modeling, and Airflow orchestration on Google Cloud
+- **[Azure CDC Framework](https://davidbryneadedeji.com/docs/projects/azure)** — row-level hash validation framework for large-scale enterprise database migration on Azure
 - **[Certifications](https://davidbryneadedeji.com/docs/certifications)** — verified Google Cloud and Microsoft Azure credentials
 
 ### Contact
