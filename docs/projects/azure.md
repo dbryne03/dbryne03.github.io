@@ -4,69 +4,155 @@ sidebar_position: 2
 
 # Microsoft Azure #0001
 
-IBM DB2 to Azure SQL migration pipeline with a custom validation layer that verifies data integrity at the row level using SHA-256 hash comparison.
+## Overview
 
-The data movement itself is handled by ADF. The more interesting piece is the validation: for each migrated table, the framework generates a hash for every row on both source and target and compares them by primary key. Mismatches get written to a reconciliation table with the row-level detail needed to investigate.
+A data migration and validation pipeline for insurance operational data on Microsoft Azure. Policyholder, policy, and claims records are migrated from a cloud-hosted PostgreSQL source alongside broker submission files delivered via SFTP, loaded into Azure SQL, and validated at the row level using a cryptographic hash comparison framework.
 
-This came from real work at 66degrees where row counts weren't enough — we needed to know the data was actually correct, not just that the right number of rows arrived.
+The pipeline is designed around a core principle: row counts confirm volume, not correctness. Every migrated row is hashed and compared between source and target to guarantee data integrity across PII-sensitive records.
+
+## Objectives
+
+1. Migrate policyholder, policy, and claims data from Azure Database for PostgreSQL into Azure SQL without data loss or corruption
+2. Ingest broker submission files from an SFTP endpoint into Azure SQL alongside the migrated records
+3. Validate data integrity at the row level using SHA-256 hash comparison across all migrated tables
+4. Surface any data mismatches with sufficient detail for investigation and remediation
+5. Handle PII data in accordance with data protection requirements — masking, encryption, and access controls applied at the database layer
+
+## Sources
+
+| Source | Name | Type | Details |
+|:---|:---|:---|:---|
+| A | Azure Database for PostgreSQL | Relational DB | 3 tables: policyholders, policies, claims |
+| B | SFTP Server | File transfer | Broker submission CSV files — new policy applications |
+
+### PostgreSQL Tables
+
+| Table | PII Fields | Description |
+|:---|:---|:---|
+| `policyholders` | Full name, DOB, NI number, address, email, phone | Insured party records |
+| `policies` | Policy number, start/end dates, premium, status, product type | Active and historical policy records |
+| `claims` | Claim ID, incident date, description, amount, status | Claims against active policies |
+
+### SFTP Source
+
+Broker submission files delivered as CSV on a scheduled basis. Each file contains new policy applications from registered brokers — policyholder details, requested cover type, and premium band. ADF picks up files on arrival via SFTP connector; processed files are archived in ADLS Gen2.
 
 ## Architecture
 
 ```
-IBM DB2 (Source)
-   │
-   ▼
-Azure Data Factory (orchestration + copy activity)
-   │
-   ▼
-ADLS Gen2 (landing zone)
-   │
-   ▼
-Azure SQL Database (target)
-   │
-   ▼
-Python Hash Engine + T-SQL Stored Procedures
-   │
-   ▼
-Reconciliation Table (row-level validation results)
+Source A                              Source B
+Azure Database for PostgreSQL         Azure Container Apps
+3 tables (PII)                        (atmoz/sftp — broker submissions)
+          │                                    │
+          ▼                                    ▼
+    ADF Copy Activity                   ADF SFTP Connector
+    (full + incremental load)           (CSV pickup + archive)
+          │                                    │
+          └──────────────┬─────────────────────┘
+                         ▼
+                   ADLS Gen2
+                   raw/postgres/ | raw/sftp/
+                         │
+                         ▼
+                   ADF Copy Activity
+                   (stage → Azure SQL)
+                         │
+                         ▼
+                   Azure SQL Database
+                   policyholders | policies | claims | broker_submissions
+                         │
+                         ▼
+                   Azure Function (Python)
+                   SHA-256 hash engine — per table, per row
+                         │
+                         ▼
+                   T-SQL Stored Procedures
+                   (source vs target hash comparison)
+                         │
+                         ▼
+                   Reconciliation Tables
+                   + ADF Pipeline Alerts (email on failure / completion)
 ```
 
-## How the Validation Works
+## PII Handling
 
-Each row gets a SHA-256 hash computed from all its column values, concatenated in sorted column order. Sorted order matters — it keeps the output deterministic regardless of how the query returns columns on either system.
+All data used in this project is synthetic, generated with Faker. PII fields are treated as sensitive throughout the pipeline regardless of origin.
 
-```python
-import hashlib
+| Control | Implementation |
+|:---|:---|
+| Column masking | Azure SQL Dynamic Data Masking on name, email, phone, address fields |
+| Field encryption | Always Encrypted on NI number and DOB columns |
+| Access control | Column-level permissions — validation service account cannot SELECT unmasked PII |
+| Credentials | All connection strings and keys stored in Azure Key Vault; ADF uses managed identity |
+| Data in transit | TLS enforced on all ADF linked service connections |
 
-def generate_row_signature(row: dict, columns: list[str]) -> str:
-    raw = "|".join(str(row.get(col, "")) for col in sorted(columns))
-    return hashlib.sha256(raw.encode()).hexdigest()
+## Validation Framework
+
+The validation engine generates a deterministic SHA-256 hash for every row in both source and target by concatenating column values in sorted column order using a pipe delimiter. Sorted column order ensures the hash is consistent regardless of how each system returns columns.
+
+Hashes are compared by primary key. Any mismatch is written to a reconciliation table with the table name, primary key value, source hash, target hash, and a column-level diff identifying which fields diverged.
+
+The comparison logic runs as a T-SQL stored procedure in Azure SQL, keeping large result sets in the database layer and avoiding unnecessary data movement over the wire. The Azure Function invokes the procedure per table and writes the reconciliation output.
+
+## Output
+
+### Reconciliation Tables
+
+Three output tables written to Azure SQL on each pipeline run:
+
+| Table | Content |
+|:---|:---|
+| `validation_run` | Run ID, timestamp, tables validated, total rows, pass rate |
+| `validation_result` | Per-table summary — row count, matched, mismatched, missing |
+| `validation_mismatch` | Row-level detail — primary key, source hash, target hash, differing columns |
+
+### Pipeline Alerts
+
+ADF pipeline alerts send email notifications on completion and on failure. Failure alerts include the pipeline stage, error message, and a link to the ADF monitoring run for immediate investigation.
+
+## Execution Model
+
+ADF orchestrates the full pipeline end-to-end. The SFTP Container App starts on pipeline trigger and stops on completion, incurring compute cost only during execution. The full sequence runs on a configurable schedule or on-demand trigger:
+
+```
+Start SFTP Container App
+→ Extract PostgreSQL tables (ADF Copy)
+→ Pick up SFTP broker files (ADF SFTP Connector)
+→ Stage to ADLS Gen2
+→ Load to Azure SQL
+→ Run hash validation (Azure Function → T-SQL)
+→ Write reconciliation output
+→ Send completion / failure alert
+→ Stop SFTP Container App
 ```
 
-The comparison runs as a T-SQL stored procedure so it stays in the database layer and avoids pulling large result sets over the wire. ADF pipelines are parameterised — you pass in the table name, primary key, and column list, and the same pipeline works for any table.
+## Design Notes
+
+**SFTP via Azure Container Apps.** The SFTP server runs as a Container App (atmoz/sftp image) that scales to zero between runs. ADF starts the container at pipeline open and stops it on completion — compute cost is limited to the execution window. SFTP credentials and host keys are stored in Azure Key Vault.
+
+**Parameterised ADF pipelines.** A single Copy Activity template accepts table name, schema, and watermark column as parameters. Adding a new source table requires no pipeline changes — a new parameter set is sufficient. The same applies to the validation stored procedure, which accepts the table name and primary key at runtime.
+
+**Hash comparison stays in the database.** Pulling source and target rows into the Azure Function for comparison would require moving the full dataset over the wire. Running the comparison as a T-SQL stored procedure keeps the data in place and returns only the mismatch records — a meaningful difference at scale.
+
+**Incremental load on the PostgreSQL tables.** Full table reloads are used on the initial migration run. Subsequent runs use watermark-based incremental extraction on an `updated_at` timestamp column, reducing data movement and load time on recurring executions.
+
+**Infrastructure is provisioned with Pulumi (TypeScript).** Azure Database for PostgreSQL, ADLS Gen2, Azure SQL, Container Apps, Azure Function App, ADF instance, Key Vault, and all IAM role assignments are declared in code and applied via CI/CD on GitHub Actions.
 
 ## Stack
 
 | Layer | Technology |
 |:---|:---|
-| Source | IBM DB2 |
+| Source DB | Azure Database for PostgreSQL |
+| SFTP | Azure Container Apps (atmoz/sftp) |
 | Orchestration | Azure Data Factory |
 | Landing Zone | Azure Data Lake Storage Gen2 |
-| Target | Azure SQL Database |
-| Hashing Engine | Python 3.12 (hashlib) |
+| Target DB | Azure SQL Database |
+| Validation Engine | Azure Functions (Python 3.12) |
 | Comparison Logic | T-SQL Stored Procedures |
 | Secrets | Azure Key Vault |
+| IaC | Pulumi (TypeScript) |
 | CI/CD | GitHub Actions |
-
-## Results
-
-| Metric | Result |
-|:---|:---|
-| Data validation accuracy | 99.99% |
-| Reduction in manual reconciliation | 65% |
-| Pipeline uptime | 99.999% |
-| Dataset size | 40TB+ |
 
 ## Repository
 
-Source code, T-SQL schemas, and ADF ARM templates: [github.com/dbryne03](https://github.com/dbryne03)
+[github.com/dbryne03/azure-insurance-0001](https://github.com/dbryne03/azure-insurance-0001)
