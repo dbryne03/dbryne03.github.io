@@ -106,6 +106,8 @@ The pipeline runs on the first of each month via a scheduled Airflow DAG. The sa
 
 **Cross-source artist resolution.** Last.fm, MusicBrainz, Billboard, and Spotify each use different identifiers for the same artist entity. The intermediate layer constructs a resolution table using MusicBrainz IDs as the canonical key, with normalised name matching applied as a fallback for records that do not carry an MBID.
 
+**Infrastructure is provisioned with Pulumi (Python).** GCS buckets, BigQuery datasets, Cloud Run Job definitions, Secret Manager secrets, and IAM bindings are all declared in code and applied via CI/CD. Nothing is clicked into existence in the console.
+
 **Spotify Parquet staging is intentionally minimal.** The dataset arrives pre-typed with clean audio features. Staging conforms column names and nullability only. The transformation logic is concentrated in the intermediate layer, where audio features are joined to chart and play data to produce a richer track dimension than either source provides independently.
 
 ## Stack
@@ -119,6 +121,7 @@ The pipeline runs on the first of each month via a scheduled Airflow DAG. The sa
 | Transformation | dbt Core |
 | Orchestration | Apache Airflow |
 | Reporting | Looker Studio, Google Sheets (BigQuery connector) |
+| IaC | Pulumi (Python) |
 | CI/CD | GitHub Actions |
 | Secrets | GCP Secret Manager |
 
