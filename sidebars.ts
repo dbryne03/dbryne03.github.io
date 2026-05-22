@@ -7,7 +7,14 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Projects',
       items: [
-        {type: 'doc', id: 'projects/gcp0001', label: 'Google Cloud Platform #0001'},
+        {
+          type: 'category',
+          label: 'Google Cloud Platform #0001',
+          items: [
+            {type: 'doc', id: 'projects/gcp0001', label: 'Overview'},
+            {type: 'doc', id: 'projects/gcp0001-tdd', label: 'Technical Design Document'},
+          ],
+        },
         {type: 'doc', id: 'projects/azure0001', label: 'Microsoft Azure #0001'},
       ],
     },
