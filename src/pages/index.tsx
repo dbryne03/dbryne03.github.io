@@ -31,9 +31,8 @@ function AboutSection() {
               useful versus what's being oversold.
             </p>
             <p>
-              Originally from Nigeria, currently based in the US, and actively looking to
-              relocate to Greater Manchester. I'm drawn to the engineering culture there
-              and ready to make the move.
+              Originally from Nigeria, currently based in the US, and open to roles in
+              Canada, the UK, or Europe. Willing to relocate.
             </p>
           </div>
           <div className={styles.aboutMeta}>
@@ -43,12 +42,12 @@ function AboutSection() {
                 <dd>United States</dd>
               </div>
               <div className={styles.metaRow}>
-                <dt>Seeking</dt>
-                <dd>Greater Manchester, UK</dd>
+                <dt>Open to</dt>
+                <dd>Canada · UK · Europe</dd>
               </div>
               <div className={styles.metaRow}>
-                <dt>Visa</dt>
-                <dd>Skilled Worker sponsorship required</dd>
+                <dt>Relocation</dt>
+                <dd>Yes — open to sponsorship</dd>
               </div>
               <div className={styles.metaRow}>
                 <dt>Contact</dt>
